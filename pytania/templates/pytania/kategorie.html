@@ -1,0 +1,14 @@
+{% extends "pytania/base.html" %}
+{% block title %}eCG Testy – Kategorie{% endblock %}
+
+    {% block content_title %}
+        Kategorie
+    {% endblock %}
+
+    {% block content %}
+    <ul>
+        {% for kategoria in kategorie %}
+            <li>{{ kategoria.nazwa }}</li>
+        {% endfor %}
+    </ul>
+    {% endblock %}

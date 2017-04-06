@@ -1,0 +1,279 @@
+[
+{
+    "fields": {
+        "name": "publiczna",
+        "permissions": []
+    },
+    "model": "auth.group",
+    "pk": 1
+},
+{
+    "fields": {
+        "username": "redrob",
+        "first_name": "",
+        "last_name": "",
+        "is_active": true,
+        "is_superuser": true,
+        "is_staff": true,
+        "last_login": "2015-03-28T19:04:59.843Z",
+        "groups": [],
+        "user_permissions": [],
+        "password": "pbkdf2_sha256$15000$hZnu9Vtio16W$w4dZNebMXi8yk2/HwyYx5GMOWJNB2IlQ6b9DHkDrbUQ=",
+        "email": "",
+        "date_joined": "2015-03-28T18:53:39.119Z"
+    },
+    "model": "auth.user",
+    "pk": 1
+},
+{
+    "fields": {
+        "username": "katon",
+        "first_name": "Katon",
+        "last_name": "Starszy",
+        "is_active": true,
+        "is_superuser": false,
+        "is_staff": false,
+        "last_login": "2015-03-28T19:03:15.154Z",
+        "groups": [],
+        "user_permissions": [],
+        "password": "pbkdf2_sha256$15000$Ap1bMUlmYLQq$Bv/BAZjFiWfKzbkFsE6HjEKrTcoyY0Y8M4tBJbj08IY=",
+        "email": "katon@ecg.vot.pl",
+        "date_joined": "2015-03-28T19:03:14.511Z"
+    },
+    "model": "auth.user",
+    "pk": 2
+},
+{
+    "fields": {
+        "expire_date": "2015-04-11T19:04:59.988Z",
+        "session_data": "NDVlYWVjNmNlMGM0OGUwYWIzMzdhZjJhZDY3MDY4ZmY0N2UwN2NkMDp7Il9hdXRoX3VzZXJfaGFzaCI6ImY3ODJhYzBhMDI4NTk2YmM0ODczZmNmNDJmOWU4NTI0Yjk4ZWUwYzIiLCJfYXV0aF91c2VyX2JhY2tlbmQiOiJkamFuZ28uY29udHJpYi5hdXRoLmJhY2tlbmRzLk1vZGVsQmFja2VuZCIsIl9hdXRoX3VzZXJfaWQiOjF9"
+    },
+    "model": "sessions.session",
+    "pk": "z6cd6h8bfdfjhq2gkmnwt0bmb7rs542i"
+},
+{
+    "fields": {
+        "autor": 1,
+        "token": "publiczna",
+        "grupa": 1
+    },
+    "model": "pytania.grupa",
+    "pk": 1
+},
+{
+    "fields": {
+        "autor": 1,
+        "nazwa": "brak przedmiotu"
+    },
+    "model": "pytania.przedmiot",
+    "pk": 1
+},
+{
+    "fields": {
+        "autor": 1,
+        "nazwa": "j. polski"
+    },
+    "model": "pytania.przedmiot",
+    "pk": 2
+},
+{
+    "fields": {
+        "autor": 1,
+        "nazwa": "j. angielski"
+    },
+    "model": "pytania.przedmiot",
+    "pk": 3
+},
+{
+    "fields": {
+        "autor": 1,
+        "nazwa": "j. niemiecki"
+    },
+    "model": "pytania.przedmiot",
+    "pk": 4
+},
+{
+    "fields": {
+        "autor": 1,
+        "nazwa": "historia"
+    },
+    "model": "pytania.przedmiot",
+    "pk": 5
+},
+{
+    "fields": {
+        "autor": 1,
+        "nazwa": "matematyka"
+    },
+    "model": "pytania.przedmiot",
+    "pk": 6
+},
+{
+    "fields": {
+        "autor": 1,
+        "nazwa": "informatyka"
+    },
+    "model": "pytania.przedmiot",
+    "pk": 7
+},
+{
+    "fields": {
+        "autor": 1,
+        "nazwa": "inny"
+    },
+    "model": "pytania.przedmiot",
+    "pk": 8
+},
+{
+    "fields": {
+        "autor": 1,
+        "przedmiot": 1,
+        "nazwa": "brak kategorii"
+    },
+    "model": "pytania.kategoria",
+    "pk": 1
+},
+{
+    "fields": {
+        "action_flag": 1,
+        "action_time": "2015-03-28T19:07:23.524Z",
+        "object_repr": "brak przedmiotu",
+        "object_id": "1",
+        "change_message": "",
+        "user": 1,
+        "content_type": 8
+    },
+    "model": "admin.logentry",
+    "pk": 1
+},
+{
+    "fields": {
+        "action_flag": 1,
+        "action_time": "2015-03-28T19:07:59.693Z",
+        "object_repr": "j. polski",
+        "object_id": "2",
+        "change_message": "",
+        "user": 1,
+        "content_type": 8
+    },
+    "model": "admin.logentry",
+    "pk": 2
+},
+{
+    "fields": {
+        "action_flag": 1,
+        "action_time": "2015-03-28T19:08:11.141Z",
+        "object_repr": "j. angielski",
+        "object_id": "3",
+        "change_message": "",
+        "user": 1,
+        "content_type": 8
+    },
+    "model": "admin.logentry",
+    "pk": 3
+},
+{
+    "fields": {
+        "action_flag": 1,
+        "action_time": "2015-03-28T19:08:21.118Z",
+        "object_repr": "j. niemiecki",
+        "object_id": "4",
+        "change_message": "",
+        "user": 1,
+        "content_type": 8
+    },
+    "model": "admin.logentry",
+    "pk": 4
+},
+{
+    "fields": {
+        "action_flag": 1,
+        "action_time": "2015-03-28T19:08:39.356Z",
+        "object_repr": "historia",
+        "object_id": "5",
+        "change_message": "",
+        "user": 1,
+        "content_type": 8
+    },
+    "model": "admin.logentry",
+    "pk": 5
+},
+{
+    "fields": {
+        "action_flag": 1,
+        "action_time": "2015-03-28T19:08:46.226Z",
+        "object_repr": "matematyka",
+        "object_id": "6",
+        "change_message": "",
+        "user": 1,
+        "content_type": 8
+    },
+    "model": "admin.logentry",
+    "pk": 6
+},
+{
+    "fields": {
+        "action_flag": 1,
+        "action_time": "2015-03-28T19:09:02.371Z",
+        "object_repr": "informatyka",
+        "object_id": "7",
+        "change_message": "",
+        "user": 1,
+        "content_type": 8
+    },
+    "model": "admin.logentry",
+    "pk": 7
+},
+{
+    "fields": {
+        "action_flag": 1,
+        "action_time": "2015-03-28T19:09:31.790Z",
+        "object_repr": "inny",
+        "object_id": "8",
+        "change_message": "",
+        "user": 1,
+        "content_type": 8
+    },
+    "model": "admin.logentry",
+    "pk": 8
+},
+{
+    "fields": {
+        "action_flag": 1,
+        "action_time": "2015-03-28T19:11:25.741Z",
+        "object_repr": "brak kategorii",
+        "object_id": "1",
+        "change_message": "",
+        "user": 1,
+        "content_type": 9
+    },
+    "model": "admin.logentry",
+    "pk": 9
+},
+{
+    "fields": {
+        "action_flag": 1,
+        "action_time": "2015-03-28T19:12:21.189Z",
+        "object_repr": "publiczna",
+        "object_id": "1",
+        "change_message": "",
+        "user": 1,
+        "content_type": 3
+    },
+    "model": "admin.logentry",
+    "pk": 10
+},
+{
+    "fields": {
+        "action_flag": 1,
+        "action_time": "2015-03-28T19:12:37.072Z",
+        "object_repr": "publiczna",
+        "object_id": "1",
+        "change_message": "",
+        "user": 1,
+        "content_type": 7
+    },
+    "model": "admin.logentry",
+    "pk": 11
+}
+]

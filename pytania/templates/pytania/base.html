@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <title>{% block title %}eCGTesty{% endblock %}</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta http-equiv="Content-Language" content="pl" />
+  <meta name="author" content="wdesign" />
+  <meta name="Description" content="Platforma E-Testy umożliwia tworzenie testów edukacyjnych oraz sprawdzanie wiedzy przy ich wykorzystaniu. Załóż konto, twórz sprawdziany, dodawaj materiały edukacyjne." />
+  <meta name="Keywords" content="e-testy,e-testy free,testy www,testy edukacyjne,testy free,testy język polski,testy informatyka" />
+  <meta name="Robots" content="all" />
+  <link href="{% static 'pytania/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+  <link href="{% static 'pytania/css/style.css' %}" rel="stylesheet" type="text/css" />
+  {% block get_css %}{% endblock %}
+</head>
+<body>
+<!--[if lte IE 8]>
+  <div>
+    <p>Używasz przeglądarki Internet Explorer 6 lub 7, które ze względu na podatność na ataki złośliwego oprogramowania zostały wycofane.<br />
+    Zainstaluj IE w wersji 8 lub najlepiej <a rel="nofollow" href="http://windows.microsoft.com/ie9">9</a>, albo wypróbuj lepsze programy:
+    <a rel="nofollow" href="http://www.firefox.pl/">Mozilla Firefox</a>,
+    <a rel="nofollow" href="http://www.opera.com/">Opera</a>,
+    <a rel="nofollow" href="http://www.google.com/chrome/">Google Chrome</a>.
+    </p>
+  </div>
+<![endif]-->
+  <!-- site header -->
+  <header>
+  <div class="container">
+
+    <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">eCG</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+
+      <ul class="nav navbar-nav">
+        <li><a href="{% url 'pytania:index' %}">Witamy</a></li>
+      {% if user.is_authenticated %}
+        <li><a href="{% url 'pytania:kategorie' %}">Kategorie</a></li>
+        <li><a href="{% url 'pytania:pytania-lista' %}">Pytania</a></li>
+        <li><a href="{% url 'pytania:profil' %}">Profil</a></li>
+      {% else %}
+        <li><a href="{% url 'registration_register' %}">Zarejestruj</a></li>
+      {% endif %}
+      </ul>
+      {% if not user.is_authenticated %}
+        <form class="navbar-form navbar-right" method="POST" action="{% url 'pytania:login' %}">
+        {% csrf_token %}
+        <span>{{ formlog.non_field_errors }}</span>
+        <div class="form-group">
+          <span class="text-warning">{{ formlog.username.errors }}</span>
+          <input id="{{ formlog.username.id }}" type="text" name="{{ formlog.username.html_name }}" maxlength="formlog.username.field.max_length" class="form-control" />
+        </div>
+        <div class="form-group">
+          <span class="text-warning">{{ formlog.password.errors }}</span>
+          <input id="{{ formlog.password.id }}" type="password" name="{{ formlog.password.html_name }}" class="form-control" />
+        </div>
+        <button class="btn btn-success" type="submit">Zaloguj</button>
+        </form>
+      {% else %}
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="{% url 'pytania:logout' %}">Wyloguj: {{ user.username }}</a></li>
+        </ul>
+      {% endif %}
+
+      </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+    </nav>
+
+  </div> <!-- container/ -->
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <p class="pull-right">Czego nauczysz się sam, będziesz umiał...</p>
+      </div>
+    </div>
+  </div> <!-- container/ -->
+</header> <!-- koniec header -->
+
+  <!-- page content -->
+<article>
+  <section>
+
+  <noscript><p>!!! Twoja przeglądarka nie obsługuje języka JavaScript! Aby korzystać z wszystkich możliwości serwisu, uaktywnij obsługę JavaScript.</p></noscript>
+
+  <div class="container">
+    <h1>{% block content_title %}{% endblock %}</h1>
+    {% block messages %}
+      {% if messages %}
+        <ul class="messagelist">{% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
+        {% endfor %}</ul>
+      {% endif %}
+    {% endblock messages %}
+  </div>
+  <div class="container">
+    {% block content %}{% endblock %}
+
+    <div class="footer cb">
+      <div id="error"></div>
+      <div id="kom"></div>
+    </div>
+  </div>
+
+  </section>
+</article>
+
+  </div> <!-- container/ -->
+
+  <!-- site footer -->
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-6">
+        &nbsp;&copy; 2011-2014 wDesign&nbsp;v. 1.2.0
+      </div>
+      <div class="col-xs-6">
+        <p class="pull-right">&middot; Theme by <a href="http://www.cagintranet.com" >Cagintranet</a> highly modified by wDesign</p>
+      </div>
+      <div class="right"></div>
+    </div>
+  </div>
+
+<script type="text/javascript" src="{% static "pytania/js/jquery-1.11.3.min.js" %}"></script>
+<script type="text/javascript" src="{% static "pytania/js/jquery-ui-1.10.4.min.js" %}"></script>
+<script type="text/javascript" src="{% static "pytania/js/testy.js" %}"></script>
+{% block get_js %}{% endblock %}
+</body>
+</html>

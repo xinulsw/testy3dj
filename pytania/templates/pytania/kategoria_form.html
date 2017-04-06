@@ -1,0 +1,25 @@
+{% extends "pytania/base.html" %}
+{% block title %}eCG Testy – Kategorie{% endblock %}
+
+    {% block content_title %}
+        Kategorie
+    {% endblock %}
+
+    {% block content %}
+    <form action="" method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Zapisz" />
+    </form>
+    <br />
+    <h2>Utworzone kategorie</h2>
+    <table class="tab">
+        {% for kategoria in object_list %}
+            <tr class="{% cycle 'odd' 'even' %}">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ kategoria.nazwa }}</td><td>{{ kategoria.przedmiot }}</td>
+            </tr>
+        {% empty %}
+            <p>Nie dodałeś jeszcze żadnych kategorii</p>
+        {% endfor %}
+    </table>
+    {% endblock %}

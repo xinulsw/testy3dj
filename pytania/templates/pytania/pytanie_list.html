@@ -1,0 +1,24 @@
+{% extends "pytania/base.html" %}
+{% block title %}eCG Testy – Kategorie{% endblock %}
+
+    {% block content_title %}
+        Pytania
+    {% endblock %}
+
+    {% block content %}
+
+    <ul>
+        {% for pytanie in object_list %}
+            <li>{{ pytanie.polecenie }} <img src="{{ MEDIA_URL }}{{ pytanie.obrazek }}" width="100" />
+            <ol>
+            {% for odp in pytanie.odpowiedzi.all %}
+              <li>{{ odp.tresc }}</li>
+            {% endfor %}
+            </ol>
+            </li>
+        {% empty %}
+          <hr />
+          <li><a href="{% url 'pytania:pytanie' %}">Dodaj pytanie</a></li>
+        {% endfor %}
+    </ul>
+    {% endblock %}

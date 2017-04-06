@@ -1,0 +1,15 @@
+{% extends "pytania/base.html" %}
+{% block title %}eCG Testy – Profil użytkownika{% endblock %}
+    {% block content_title %}
+        Witaj, {{ user.username }}
+    {% endblock %}
+
+    {% block content %}
+        <form id="frmprofil" method="POST">
+            {% csrf_token %}
+            <table>
+            {{ form.as_table }}
+            </table>
+            <button type="submit">Zaktualizuj</button>
+        </form>
+    {% endblock %}

@@ -1,0 +1,25 @@
+{% extends "pytania/base.html" %}
+{% block title %}eCG Testy – Przedmioty{% endblock %}
+
+    {% block content_title %}
+        Przedmioty
+    {% endblock %}
+
+    {% block content %}
+    <form action="" method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Zapisz" />
+    </form>
+    <br />
+    <h2>Utworzone przedmioty</h2>
+    <table class="tab">
+        {% for item in object_list %}
+            <tr class="{% cycle 'odd' 'even' %}">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.nazwa }}</td>
+            </tr>
+        {% empty %}
+            <p>Nie dodałeś jeszcze żadnych przedmiotów</p>
+        {% endfor %}
+    </table>
+    {% endblock %}

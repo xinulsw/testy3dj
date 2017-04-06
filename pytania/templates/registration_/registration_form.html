@@ -1,0 +1,13 @@
+{% extends "pytania/base.html" %}
+{% block title %}eCG Testy – Tworzenie konta{% endblock %}
+  {% block content_title %}
+  {% endblock %}
+
+  {% block content %}
+	<h1>Tworzenie konta</h1>
+	<form action="." method="post">
+	    {% csrf_token %}
+	    {{ form.as_p }}
+	    <input type="submit" value="Utwórz konto">
+	</form>
+	{% endblock %}

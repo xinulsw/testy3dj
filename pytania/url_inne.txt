@@ -1,0 +1,12 @@
+# url(r'^kategorie/$', ListView.as_view(model=Kategoria,)),
+# url(r'^kategorie/$', views.KategoriaListView.as_view(), name='kategorie'),
+# ex: /ankiety/5/
+# url(r'^(?P<pyt_id>\d+)/$', views.szczegoly, name='szczegoly'),
+# ex: /ankiety/5/wyniki/
+# url(r'^(?P<pyt_id>\d+)/wyniki/$', views.wyniki, name='wyniki'),
+# ex: /ankiety/5/glosuj/
+# url(r'^(?P<pyt_id>\d+)/glosuj/$', views.glosuj, name='glosuj'),
+# url(r'^$', views.IndexView.as_view(), name='index'),
+# url(r'^(?P<pk>\d+)/$', views.DetailView.as_view(), name='szczegoly'),
+# url(r'^(?P<pk>\d+)/wyniki/$', views.ResultsView.as_view(), name='wyniki'),
+# url(r'^(?P<pyt_id>\d+)/glosuj/$', views.glosuj, name='glosuj'),

@@ -1,0 +1,68 @@
+{% extends "pytania/base.html" %}
+{% block title %}eCG Testy – Pytania{% endblock %}
+
+    {% block content_title %}
+        Dodaj pytanie
+    {% endblock %}
+
+    {% block content %}
+    <form action="" method="post" id="pytform" enctype="multipart/form-data">
+        {% csrf_token %}
+        <p>
+        {{ form.non_field_errors }}
+        {% if form.przedmiot.errors %} <p>Przedmiot: {{ form.przedmiot.errors }} </p> {% endif %}
+        {% if form.kategoria.errors %} <p>Kategoria: {{ form.kategoria.errors }} </p> {% endif %}
+        {% if form.typ.errors %} <p>Typ: {{ form.typ.errors }} </p> {% endif %}
+        {% if form.obrazek.errors %} <p>Obrazek: {{ form.obrazek.errors }} </p> {% endif %}
+        {% if form.polecenie.errors %} <p>Polecenie: {{ form.polecenie.errors }} </p> {% endif %}
+        {% if form.tresc.errors %} <p>Treść: {{ form.tresc.errors }} </p> {% endif %}
+        </p>
+        <p>
+            {{ form.przedmiot.label_tag }} {{ form.przedmiot }}&nbsp;
+            {{ form.kategoria.label_tag }} {{ form.kategoria }}&nbsp;
+            {{ form.typ.label_tag }} {{ form.typ }}
+        </p>
+        <p>{{ form.obrazek.label_tag }} {{ form.obrazek }}</p>
+        <p>{{ form.polecenie.label_tag }} {{ form.polecenie }}<br />
+            {{ form.tresc.label_tag }} {{ form.tresc }}
+        </p>
+        <h3>Odpowiedzi:</h3>
+        {{ odpowiedzi.management_form }}
+        {{ odpowiedzi.non_form_errors }}
+        {% for odp in odpowiedzi %}
+            {{ odp.id }}
+            <div class="inline {{ odpowiedzi.prefix }}">
+                <span class="nrpyt">{{ forloop.counter }})&nbsp;</span>
+                {{ odp.czydobra.error }}
+                {{ odp.czydobra.label_tag }}
+                {{ odp.czydobra }}
+                <br />
+                {{ odp.obrazek.error }}
+                {{ odp.obrazek.label_tag }}
+                {{ odp.obrazek }}
+                <br />
+                {{ odp.tresc.error }}
+                {{ odp.tresc.label_tag }}
+                {{ odp.tresc }}
+                <br />
+                {{ odp.dobraodp.error }}
+                {{ odp.dobraodp.label_tag }}
+                {{ odp.dobraodp }}
+            </div>
+        {% endfor %}
+        <br /><input type="submit" value="Zapisz" class="cb" />
+    </form>
+    {% endblock %}
+
+{% block get_js %}
+{% load static %}
+<script type="text/javascript" src="{% static "pytania/js/jquery.formset.js" %}"><!-- //--></script>
+<script type="text/javascript">
+    $(function() {
+        $('#pytform div.inline').formset({
+            addText: 'Dodaj odpowiedź',
+            deleteText: 'Usuń'
+        });
+    })
+</script>
+{% endblock %}

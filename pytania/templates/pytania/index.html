@@ -1,0 +1,23 @@
+{% extends "pytania/base.html" %}
+{% block title %}eCG Testy – Witamy{% endblock %}
+
+    {% block content_title %}
+        {% if not user.is_authenticated %}
+            Witaj w systemie testów
+        {% else %}
+            Witaj, {{ user.username }}
+        {% endif %}
+    {% endblock %}
+
+    {% block content %}
+    <div class="col-xs-12">
+        <ul>
+            <li>Z modułu "Testy" można korzystać anonimowo, można też założyć konto.</li>
+            <li>Dostęp anonimowy pozwala na wyszukiwanie i rozwiązywanie testów/ankiet publicznych, wyniki nie są zapisywane.</li>
+            <li>Aby rozwiązywać testy zamknięte, należy utworzyć konto, a następnie przypisać je do grup(y), podając hasło otrzymane od założyciela grupy.</li>
+            <li>Aby dodawać pytania, testy i grupy należy utworzyć konto w serwisie i przejść do działu Profil/Dodaj testy/grupy.</li>
+            <li>"Grupa" w kontekście serwisu zawiera użytkowników, którzy chcą rozwiązywać testy, albo wypełniać ankiety dodane przez założyciela grupy.</li>
+            <li><a href="{% url 'registration_register' %}">Założenie konta</a> umożliwia: zapisywanie/przeglądanie/usuwanie wyników testów publicznych oraz otwartych, a w przypadku kont typu "nauczyciel": dodawanie grup, kategorii, pytań, testów i ankiet.</li>
+        </ul>
+    </div>
+    {% endblock %}

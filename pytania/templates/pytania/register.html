@@ -1,0 +1,15 @@
+{% extends "pytania/base.html" %}
+{% block title %}eCG Testy – Rejestracja użytkownika{% endblock %}
+    {% block content_title %}
+        Rejestracja nowego użytkownika w serwisie
+    {% endblock %}
+
+    {% block content %}
+        <form id="frmregister" method="POST">
+            {% csrf_token %}
+            <table>
+            {{ form.as_table }}
+            </table>
+            <button type="submit">Zarejestruj</button>
+        </form>
+    {% endblock %}
