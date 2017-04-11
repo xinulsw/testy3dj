@@ -14,7 +14,6 @@ urlpatterns = [
     url(r'^profil/$', views.my_profil, name='profil'),
     url(r'^login/$', views.my_login, name='login'),
     url(r'^logout/$', views.my_logout, name='logout'),
-    url(r'^przedmioty/$', views.PrzedmiotCreate.as_view(), name='przedmioty'),
     url(r'^kategorie/$', views.KategoriaCreate.as_view(), name='kategorie'),
     url(r'^pytanie/$', views.PytanieCreate.as_view(), name='pytanie'),
     url(r'^pytania/$', views.PytaniaLista.as_view(), name='pytania-lista'),

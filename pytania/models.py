@@ -1,54 +1,35 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals
+
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.core.exceptions import ValidationError
 
 
 class Grupa(models.Model):
-    nazwa = models.OneToOneField(Group, unique=True)
+    nazwa = models.OneToOneField(Group)
     token = models.CharField(
         max_length=128,
         help_text="Hasło dostępu do grupy testowej")
     autor = models.ForeignKey(User)
 
-    def __unicode__(self):
-        return u'%s' % self.nazwa
-        # self.group.groupname
+    def __str__(self):
+        return str(self.nazwa)
 
     class Meta:
         verbose_name = "grupa"
         verbose_name_plural = "grupy"
 
 
-class Przedmiot(models.Model):
-    nazwa = models.CharField(max_length=100, unique=True)
-    autor = models.ForeignKey(User)
-
-    def __unicode__(self):
-        return '%s' % self.nazwa
-
-    class Meta:
-        verbose_name_plural = "przedmioty"
-
-
 class Kategoria(models.Model):
     nazwa = models.CharField(max_length=100)
-    przedmiot = models.ForeignKey('Przedmiot', related_name='kategorie')
-    autor = models.ForeignKey(User)
+    autor = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    def __unicode__(self):
-        return '%s' % self.nazwa
+    def __str__(self):
+        return str(self.nazwa)
 
     class Meta:
         verbose_name_plural = "kategorie"
-
-
-class Obrazek(models.Model):
-    nazwa = models.CharField(max_length=50)
-    obrazek = models.ImageField(upload_to='obrazki')
-    opis = models.CharField(max_length=254, verbose_name="opis obrazka")
 
 
 def validate_image(fieldfile_obj):
@@ -59,8 +40,25 @@ def validate_image(fieldfile_obj):
             "Maksymalny rozmiar pliku to %sMB" % str(megabyte_limit))
 
 
+def user_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'user_{0}/{1}'.format(instance.user.id, filename)
+
+
+class Obrazek(models.Model):
+    obrazek = models.ImageField(
+        upload_to=user_directory_path,
+        verbose_name="obrazek do pytania/odpowiedzi",
+        null=True,
+        blank=True,
+        validators=[validate_image])
+    opis = models.CharField(
+        max_length=254, verbose_name="opis obrazka", blank=True, default="")
+
+
 class Odpowiedz(models.Model):
-    pytanie = models.ForeignKey('Pytanie', related_name='odpowiedzi')
+    pytanie = models.ForeignKey(
+        'Pytanie', on_delete=models.CASCADE, related_name='odpowiedzi')
     obrazek = models.ImageField(
         upload_to='odpowiedz-img',
         verbose_name="obrazek do odpowiedzi",
@@ -78,8 +76,8 @@ class Odpowiedz(models.Model):
         verbose_name="Oczekiwana odpowiedź",
         help_text="Dla typu pytanie – poprawna odpowiedź")
 
-    def __unicode__(self):
-        return u'%s' % "odpowiedź"
+    def __str__(self):
+        return "odpowiedź"
 
     class Meta:
         verbose_name = "odpowiedź"
@@ -101,31 +99,30 @@ class Pytanie(models.Model):
         (P_OPENSHORT, 'Pytanie – krótka odpowiedź użytkownika'),
         (P_OPENLONG, 'Pytanie – długa odpowiedź użytkownika'),
     )
-    przedmiot = models.ForeignKey(Przedmiot, default=1)
-    kategoria = models.ForeignKey(Kategoria, default=1)
-    obrazek = models.ImageField(
-        upload_to='pytanie-img',
-        verbose_name="obrazek do pytania",
-        null=True,
-        blank=True,
-        validators=[validate_image])
+    kategoria = models.ForeignKey(
+        Kategoria,
+        on_delete=models.SET_DEFAULT, related_name="pytania", default=1)
     typ = models.CharField(
         max_length=3,
         choices=PYTANIE_TYP,
         default=P_RADIOONE)
-    polecenie = models.CharField(max_length=254, verbose_name="Polecenie")
+    pytanie = models.CharField(
+        max_length=254,
+        help_text="Treść pytania lub polecenie")
+    obrazek = models.ForeignKey(
+        Obrazek, on_delete=models.SET_NULL, null=True)
     tresc = models.TextField(
         blank=True,
         verbose_name="Objaśnienia",
         help_text="Dodatkowy opis wyświetlany pod poleceniem")
     autor = models.ForeignKey(User)
 
-    def __unicode__(self):
-        return u'%s' % self.polecenie
+    def __str__(self):
+        return str(self.pytanie)
 
     class Meta:
         verbose_name_plural = "pytania"
-        ordering = ['przedmiot', 'kategoria']
+        ordering = ['kategoria']
 
 
 class Test(models.Model):
@@ -135,11 +132,11 @@ class Test(models.Model):
         (T_TEST, 'Test'),
         (T_ANKIETA, 'Ankieta'),
     )
-    przedmiot = models.ForeignKey(Przedmiot, default=1)
     kategoria = models.ForeignKey(Kategoria, default=1)
     typ = models.CharField(max_length=1, choices=TEST_TYP, default=T_TEST)
-    opis = models.CharField(max_length=60)
-    czas = models.PositiveSmallIntegerField()
+    nazwa = models.CharField(max_length=60, blank=True, default="")
+    czas = models.PositiveSmallIntegerField(
+        verbose_name="czas rozwiązywania", default=0)
     losujPyt = models.BooleanField(
         default=False,
         verbose_name="Losuj pytania",
@@ -158,18 +155,18 @@ class Test(models.Model):
         help_text="Test dostępny dla wszystkich użytkowników?")
     ilePyt = models.BooleanField(
         default=False,
-        verbose_name="Ile losowych pytań",
+        verbose_name="Ile wylosować pytań",
         help_text="Ilość pytań losowanych z kategorii do testu.")
     pytania = models.ManyToManyField(
         Pytanie,
-        verbose_name="Pytania przypisane do test")
+        verbose_name="Pytania przypisane do testu")
     grupy = models.ManyToManyField(
         Grupa,
-        verbose_name="Grupy przypisane do test")
+        verbose_name="Grupy przypisane do testu")
     autor = models.ForeignKey(User)
 
-    def __unicode__(self):
-        return u'%s' % self.opis
+    def __str__(self):
+        return str(self.nazwa)
 
     class Meta:
         verbose_name = "test"

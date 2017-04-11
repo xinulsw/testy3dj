@@ -8,27 +8,6 @@ from pytania.models import Pytanie, Odpowiedz
 from django.forms.models import inlineformset_factory
 
 
-# class UserProfilForm(UserCreationForm):
-#     email = forms.EmailField(required=True)
-
-#     class Meta:
-#         model = User
-#         fields = ("username", "first_name", "last_name", "email",
-# "password1", "password2")
-#         help_texts = {
-#             'password2': 'Podaj hasło jeszcze raz!',
-#         }
-
-#     def save(self, commit=True):
-#         user = super(UserProfilForm, self).save(commit=False)
-#         user.first_name = self.cleaned_data["first_name"]
-#         user.last_name = self.cleaned_data["last_name"]
-#         user.email = self.cleaned_data["email"]
-#         if commit:
-#             user.save()
-#         return user
-
-
 class UserChangePassEmailForm(PasswordChangeForm):
     email = forms.EmailField(label="Email", max_length=254)
 
@@ -62,8 +41,8 @@ class PytanieForm(forms.ModelForm):
     class Meta:
         model = Pytanie
         fields = (
-            'przedmiot', 'obrazek', 'kategoria', 'typ', 'polecenie', 'tresc')
+            'kategoria', 'obrazek', 'typ', 'pytanie', 'tresc')
         exclude = ('autor',)
         widgets = {
-            'polecenie': forms.TextInput(attrs={'size': 80 }),
+            'pytanie': forms.TextInput(attrs={'size': 80}),
             'tresc': forms.Textarea(attrs={'rows': 2, 'cols': 80})}

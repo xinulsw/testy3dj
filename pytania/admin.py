@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib import admin
-from pytania.models import Grupa, Przedmiot, Kategoria
+from pytania.models import Grupa, Kategoria
 from pytania.models import Odpowiedz, Pytanie, Test
 from django.forms import TextInput, Textarea
 from django.db import models
@@ -17,20 +17,6 @@ class GrupaAdmin(admin.ModelAdmin):
         obj.save()
 
 
-# admin.site.register(Grupa, GrupaAdmin)
-
-@admin.register(Przedmiot)
-class PrzedmiotAdmin(admin.ModelAdmin):
-    exclude = ('autor',)
-
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.autor = request.user
-        obj.save()
-
-
-# admin.site.register(Przedmiot, PrzedmiotAdmin)
-
 @admin.register(Kategoria)
 class KategoriaAdmin(admin.ModelAdmin):
     exclude = ('autor',)
@@ -39,8 +25,6 @@ class KategoriaAdmin(admin.ModelAdmin):
         if not change:
             obj.autor = request.user
         obj.save()
-
-# admin.site.register(Kategoria, KategoriaAdmin)
 
 
 class OdpowiedzInline(admin.TabularInline):
@@ -67,7 +51,7 @@ class TestGrupaInline(admin.TabularInline):
 class PytanieAdmin(admin.ModelAdmin):
     # fields = ['przedmiot', 'kategoria', 'typ', 'polecenie']
     fieldsets = [
-        (None, {'fields': [('przedmiot', 'kategoria'), 'typ', 'polecenie']}),
+        (None, {'fields': [('kategoria'), 'typ', 'pytanie']}),
         ('Dodatkowe', {'fields': ['tresc'], 'classes': ['collapse']}),
     ]
     exclude = ('autor',)
@@ -76,9 +60,9 @@ class PytanieAdmin(admin.ModelAdmin):
     # nagłówki do wyświetlenia
     # list_display = ('question_text', 'pub_date', 'was_published_recently')
     # pole wg którego można filtrować
-    list_filter = ['przedmiot', 'kategoria']
+    list_filter = ['kategoria']
     # wyszukiwanie
-    search_fields = ['polecenie']
+    search_fields = ['pytanie']
     list_per_page = 10
 
     formfield_overrides = {
@@ -91,14 +75,12 @@ class PytanieAdmin(admin.ModelAdmin):
             obj.autor = request.user
         obj.save()
 
-# admin.site.register(Pytanie, PytanieAdmin)
-
 
 @admin.register(Test)
 class TestAdmin(admin.ModelAdmin):
     exclude = ('autor',)
 #    inlines = (TestPytanieInline, TestGrupaInline)
-    list_filter = ['przedmiot', 'kategoria']
+    list_filter = ['kategoria']
     search_fields = ['opis']
     list_per_page = 10
 
@@ -106,5 +88,3 @@ class TestAdmin(admin.ModelAdmin):
         if not change:
             obj.autor = request.user
         obj.save()
-
-# admin.site.register(Test, TestAdmin)

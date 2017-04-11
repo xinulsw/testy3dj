@@ -1,0 +1,28 @@
+[
+{
+  "model": "pytania.grupa",
+  "pk": 1,
+  "fields": {
+    "nazwa": 1,
+    "token": "U\u017cytkownicy",
+    "autor": 1
+  }
+},
+{
+  "model": "pytania.grupa",
+  "pk": 2,
+  "fields": {
+    "nazwa": 2,
+    "token": "Autorzy",
+    "autor": 1
+  }
+},
+{
+  "model": "pytania.kategoria",
+  "pk": 1,
+  "fields": {
+    "nazwa": "brak kategorii",
+    "autor": 1
+  }
+}
+]

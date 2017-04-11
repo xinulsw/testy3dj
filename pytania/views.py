@@ -6,7 +6,7 @@ from django.contrib.auth import forms, authenticate, login, logout
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from pytania.models import Kategoria, Przedmiot, Pytanie
+from pytania.models import Kategoria, Pytanie
 from pytania.forms import UserChangePassEmailForm
 from django.http import HttpResponseRedirect
 from pytania.forms import PytanieForm, OdpowiedziFormSet
@@ -21,27 +21,6 @@ def index(request):
     context = {'user': request.user, 'formlog': formlog}
     return render(request, 'pytania/index.html', context)
 
-
-# def my_register(request):
-#     """Rejestracja nowego użytkownika"""
-
-#     from pytania.forms import UserProfilForm
-#     form = UserProfilForm()
-
-#     if request.method == 'POST':
-#         form = UserProfilForm(request.POST)
-#         if form.is_valid():
-#             username = form.data['username']
-#             password = form.data['password1']
-#             form.save()
-#             user = authenticate(username=username, password=password)
-#             login(request, user)
-#             messages.success(request, "Założono konto. Zostałeś zalogowany!")
-#             return redirect(reverse('pytania:index'))
-
-#     formlog = forms.AuthenticationForm()
-#     context = {'form': form, 'formlog': formlog}
-#     return render(request, 'pytania/register.html', context)
 
 @login_required()
 def change_password(request):
@@ -105,28 +84,10 @@ def my_logout(request):
     return redirect(reverse('pytania:index'))
 
 
-class PrzedmiotCreate(LoginRequiredMixin, CreateView):
-    # login_url = '/pytania/login/'
-    model = Przedmiot
-    fields = ['nazwa']
-    success_url = '/przedmioty'
-
-    def get_context_data(self, **kwargs):
-        kwargs['object_list'] = Przedmiot.objects.filter(
-            autor=self.request.user)
-        return super(PrzedmiotCreate, self).get_context_data(**kwargs)
-
-    def form_valid(self, form):
-        przedmiot = form.save(commit=False)
-        przedmiot.autor = self.request.user
-        przedmiot.save()
-        return super(PrzedmiotCreate, self).form_valid(form)
-
-
 class KategoriaCreate(LoginRequiredMixin, CreateView):
     # login_url = '/pytania/login/'
     model = Kategoria
-    fields = ['nazwa', 'przedmiot']
+    fields = ['nazwa']
     success_url = '/kategorie'
 
     def get_context_data(self, **kwargs):
@@ -134,10 +95,10 @@ class KategoriaCreate(LoginRequiredMixin, CreateView):
             autor=self.request.user)
         return super(KategoriaCreate, self).get_context_data(**kwargs)
 
-    def get_initial(self):
-        return {
-            "przedmiot": Przedmiot.objects.get(pk=1)
-        }
+    # def get_initial(self):
+    #     return {
+    #         "przedmiot": Przedmiot.objects.get(pk=1)
+    #     }
 
     def form_valid(self, form):
         kategoria = form.save(commit=False)
@@ -157,10 +118,9 @@ class PytanieCreate(LoginRequiredMixin, CreateView):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         odpowiedzi = OdpowiedziFormSet()
-        print odpowiedzi
+        print(odpowiedzi)
         return self.render_to_response(
-            self.get_context_data(form=form, odpowiedzi=odpowiedzi)
-            )
+            self.get_context_data(form=form, odpowiedzi=odpowiedzi))
 
     def post(self, request, *args, **kwargs):
         self.object = None
