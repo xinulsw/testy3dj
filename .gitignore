@@ -59,4 +59,4 @@ docs/_build/
 .sublime-project
 
 # sqlite database
-db.sqlite3
+/db.sqlite3
