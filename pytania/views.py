@@ -47,17 +47,24 @@ def my_profil(request):
     """Edycja danych użytkownika"""
 
     from pytania.forms import UserUpdateForm
-    form = UserUpdateForm(instance=request.user)
+    from pytania.forms import UserGroupForm
+    user_form = UserUpdateForm(instance=request.user)
     if request.method == 'POST':
-        form = UserUpdateForm(data=request.POST, instance=request.user)
-        if form.has_changed() and form.is_valid():
-            form.save()
+        user_form = UserUpdateForm(data=request.POST, instance=request.user)
+        if user_form.has_changed() and user_form.is_valid():
+            user_form.save()
             messages.success(request, "Dane zaktualizowano!")
         else:
             messages.info(request, "Dane są aktualne.")
 
     # formlog = forms.AuthenticationForm()
-    context = {'form': form}
+    grupa_form = UserGroupForm()
+    grupy = request.user.groups.all()
+    context = {
+        'user_form': user_form,
+        'grupa_form': grupa_form,
+        'grupy': grupy
+    }
     return render(request, 'pytania/profil.html', context)
 
 
@@ -71,13 +78,16 @@ def my_logout(request):
 @login_required()
 def my_grupy(request):
     """Dodawanie do grupy / lista grup / usuwanie z grupy użytkownika"""
+
+    from pytania.forms import UserUpdateForm
     from pytania.forms import UserGroupForm
 
     if request.method == 'POST':
-        form = UserGroupForm(data=request.POST)
-        if form.is_valid():
+        grupa_form = UserGroupForm(data=request.POST)
+        if grupa_form.is_valid():
             try:
-                grupa = Grupa.objects.get(token=form.cleaned_data.get('token'))
+                grupa = Grupa.objects.get(
+                    token=grupa_form.cleaned_data.get('token'))
                 if request.user.groups.filter(pk=grupa.grupa.id).count():
                     messages.warning(
                         request, 'Jesteś już w grupie %s!' % grupa.grupa)
@@ -91,15 +101,20 @@ def my_grupy(request):
         # usnięcie użytkownika z grup
         if request.POST.get('grupydel'):
             for g_id in request.POST.get('grupydel'):
-                grupa = Grupa.objects.get(nazwa=g_id)
+                grupa = Grupa.objects.get(grupa=g_id)
                 grupa.grupa.user_set.remove(request.user)
                 messages.success(
                     request, "Usunięto Cię z grupy %s!" % grupa.grupa)
 
-    form = UserGroupForm()
+    user_form = UserUpdateForm(instance=request.user)
+    grupa_form = UserGroupForm()
     grupy = request.user.groups.all()
-    context = {'form': form, 'grupy': grupy}
-    return render(request, 'pytania/grupy.html', context)
+    context = {
+        'user_form': user_form,
+        'grupa_form': grupa_form,
+        'grupy': grupy
+    }
+    return render(request, 'pytania/profil.html', context)
 
 
 # def test_func(user):

@@ -27,7 +27,8 @@ class Grupa(models.Model):
 @receiver(post_save, sender=Group)
 def create_group_grupa(sender, instance, created, **kwargs):
     if created:
-        Grupa.objects.create(grupa=instance, token=instance.token, autor=instance.autor)
+        Grupa.objects.create(
+            grupa=instance, token=instance.token, autor=instance.autor)
 
 
 @receiver(post_save, sender=Group)

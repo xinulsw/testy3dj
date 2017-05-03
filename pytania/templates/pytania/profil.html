@@ -5,11 +5,45 @@
     {% endblock %}
 
     {% block content %}
-        <form id="frmprofil" method="POST">
+        <form id="frmprofil" method="POST" action="{% url 'pytania:profil' %}">
             {% csrf_token %}
             <table>
-            {{ form.as_table }}
+            {{ user_form.as_table }}
             </table>
             <button type="submit">Zaktualizuj</button>
         </form>
+
+        <table>
+        <tr>
+        <td style="width:49%" class="vertical-align">
+        {% if grupy %}
+            <h3>Należysz do grup</h3>
+            <form id="frmgrupydel" method="POST" action="{% url 'pytania:grupy' %}">
+                {% csrf_token %}
+            <table class="table" style="width: auto">
+            <tr><td>Nazwa</td><td>Usuń</td></tr>
+            {% for g in grupy %}
+                <tr>
+                    <td>{{ g.name }}</td>
+                    <td><input name="grupydel" type="checkbox" value="{{ g.id }}"></td>
+                </tr>
+            {% endfor %}
+            </table>
+                <button type="submit">Usuń</button>
+            </form>
+        {% else %}
+            <div class="alert alert-info">Nie należysz do żadnej grupy</div>
+        {% endif %}
+        </td>
+        <td style="width:49%" class="vertical-align">
+        <h3>Dołącz do nowej grupy</h3>
+        <form id="frmgrupy" method="POST" action="{% url 'pytania:grupy' %}">
+            {% csrf_token %}
+            <table class="table" style="width: auto">
+            {{ grupa_form.as_table }}
+            </table>
+            <button type="submit">Dołącz</button>
+        </form>
+        </td></tr>
+        </table>
     {% endblock %}
