@@ -54,3 +54,9 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+
+# Sublime-Text projects
+.sublime-project
+
+# sqlite database
+db.sqlite3
