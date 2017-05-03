@@ -16,7 +16,7 @@
             <td>{{ grupa.grupa }}</td>
             <td>{{ grupa.token }}</td>
             <td><a href="{% url 'pytania:grupa-edytuj' grupa.grupa.id %}">Edytuj</a></td>
-            <td><a href="{% url 'pytania:grupa-usun' grupa.id %}">Usuń</a></td>
+            <td><a href="{% url 'pytania:grupa-usun' grupa.grupa.id %}">Usuń</a></td>
         </tr>
         {% endfor %}
         </table>
@@ -25,9 +25,10 @@
     {% endif %}
 
     <h3>Dodaj/edytuj grupy</h3>
-    <form id="frmkategoria" action="." method="post">
+    <form id="frmgrupa" action="." method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ group_form.as_p }}
+        {{ grupa_form.as_p }}
         <input type="submit" value="Zapisz" />
     </form>
 

@@ -8,7 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from pytania.models import Kategoria, Pytanie, Grupa
 from django.contrib.auth.models import Group
-from pytania.forms import UserChangePassEmailForm, NewGroupForm
+from pytania.forms import UserChangePassEmailForm
+from pytania.forms import GroupForm, GrupaForm
 from django.http import HttpResponseRedirect
 from pytania.forms import PytanieForm, OdpowiedziFormSet
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -101,102 +102,57 @@ def my_grupy(request):
     return render(request, 'pytania/grupy.html', context)
 
 
-class GrupaCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    model = Group
-    # fields = ['name', 'token']
-    form_class = NewGroupForm
-    template_name = 'pytania/grupa_form.html'
-    success_url = "/grupa"
+# def test_func(user):
+#     """Czy użytkowni jest w grupie Autorzy?"""
+#     return user.groups.filter(name='Autorzy').exists()
 
-    def test_func(self):
-        """Nadpisanie funkcji testującej uprawnienia użytkownika"""
-        return self.request.user.groups.filter(name='Autorzy').exists()
 
-    def get_login_url(self):
-        if not self.request.user.is_authenticated():
-            return super(GrupaCreate, self).get_login_url()
+@login_required
+# @user_passes_test(test_func)
+# @transaction.atomic
+def update_grupa(request, group_id=None):
+
+    if not request.user.groups.filter(name='Autorzy').exists():
+        messages.warning(
+            request,
+            "Aby dodawać grupy, musisz należeć do grupy Autorzy")
+        return redirect('/grupy/')
+
+    object_list = Grupa.objects.filter(autor=request.user)
+
+    if (group_id):
+        group = Group.objects.select_related('grupa').get(pk=group_id)
+    else:
+        group = Group()
+        group.grupa = Grupa()
+
+    if request.method == 'POST':
+        group_form = GroupForm(request.POST, instance=group)
+        grupa_form = GrupaForm(request.POST, instance=group.grupa)
+        grupa_form.instance.autor = request.user
+        if group_form.is_valid() and grupa_form.is_valid():
+            group_form.instance.autor = request.user
+            group_form.instance.token = grupa_form.instance.token
+            group_form.save()
+            # grupa_form.instance.grupa = obj
+            # grupa_form.save()
+            messages.success(request, ('Dodano grupę'))
+            return redirect('pytania:grupa')
         else:
-            self.redirect_field_name = None
-            messages.warning(
-                self.request,
-                "Aby dodawać grupy, musisz należeć do grupy Autorzy")
-            return '/grupy/'
+            messages.error(request, ('Popraw poniższe błędy.'))
+    else:
+        group_form = GroupForm(instance=group)
+        grupa_form = GrupaForm(instance=group.grupa)
 
-    def get_context_data(self, **kwargs):
-        kwargs['object_list'] = Grupa.objects.filter(
-            autor=self.request.user)
-        return super(GrupaCreate, self).get_context_data(**kwargs)
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.save()
-        print(self.object)
-        grupa = Grupa(
-            grupa=self.object,
-            token=form.cleaned_data['token'],
-            autor=self.request.user)
-        grupa.save()
-        return super(GrupaCreate, self).form_valid(form)
-
-    # def save(self, *args, **kwargs):
-    #         self.full_clean()
-    #         super(Room, self).save(*args, **kwargs)
-
-
-class GrupaUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Group
-    form_class = NewGroupForm
-    template_name = 'pytania/grupa_form.html'
-    success_url = "/grupa"
-
-    def test_func(self):
-        """Nadpisanie funkcji testującej uprawnienia użytkownika"""
-        return self.request.user.groups.filter(name='Autorzy').exists()
-
-    def get_login_url(self):
-        if not self.request.user.is_authenticated():
-            return super(GrupaUpdate, self).get_login_url()
-        else:
-            self.redirect_field_name = None
-            messages.warning(
-                self.request,
-                "Aby edytować grupy, musisz należeć do grupy Autorzy")
-            return '/grupy/'
-
-    def get_context_data(self, **kwargs):
-        kwargs['object_list'] = Grupa.objects.filter(
-            autor=self.request.user)
-        return super(GrupaUpdate, self).get_context_data(**kwargs)
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        try:
-            self.initial = {'token': self.object.grupa.token}
-            print(self.object.grupa.token)
-        except Grupa.DoesNotExist:
-            pass
-        return super(GrupaUpdate, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        form = NewGroupForm(self.request.POST, instance=self.object)
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
-
-    def form_valid(self, form):
-        self.object = form.save()
-        # self.object.save()
-        grupa = Grupa.objects.get(grupa=self.object)
-        if grupa.token != form.cleaned_data['token']:
-            grupa.token = form.cleaned_data['token']
-            grupa.save()
-        return super(GrupaUpdate, self).form_valid(form)
+    return render(request, 'pytania/grupa_form.html', {
+        'object_list': object_list,
+        'group_form': group_form,
+        'grupa_form': grupa_form
+    })
 
 
 class GrupaDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = Grupa
+    model = Group
     template_name_suffix = '_delete'
     success_url = '/grupa'
 
@@ -206,17 +162,13 @@ class GrupaDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_login_url(self):
         if not self.request.user.is_authenticated():
-            return super(GrupaCreate, self).get_login_url()
+            return super(GrupaDelete, self).get_login_url()
         else:
             self.redirect_field_name = None
             messages.warning(
                 self.request,
                 "Aby usuwać grupy, musisz należeć do grupy Autorzy")
             return '/grupy/'
-
-    def form_valid(self, form):
-        print(form.cleaned_data)
-        return super(GrupaDelete, self).form_valid(form)
 
 
 class KategoriaCreate(LoginRequiredMixin, CreateView):

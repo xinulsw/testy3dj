@@ -18,6 +18,124 @@
 # przedmiot = models.ForeignKey(Przedmiot, default=1)
 
 # views.py
+
+class GrupaCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Group
+    # fields = ['name', 'token']
+    form_class = NewGroupForm
+    template_name = 'pytania/grupa_form.html'
+    success_url = "/grupa"
+
+    def test_func(self):
+        """Nadpisanie funkcji testującej uprawnienia użytkownika"""
+        return self.request.user.groups.filter(name='Autorzy').exists()
+
+    def get_login_url(self):
+        if not self.request.user.is_authenticated():
+            return super(GrupaCreate, self).get_login_url()
+        else:
+            self.redirect_field_name = None
+            messages.warning(
+                self.request,
+                "Aby dodawać grupy, musisz należeć do grupy Autorzy")
+            return '/grupy/'
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = Grupa.objects.filter(
+            autor=self.request.user)
+        return super(GrupaCreate, self).get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.save()
+        print(self.object)
+        grupa = Grupa(
+            grupa=self.object,
+            token=form.cleaned_data['token'],
+            autor=self.request.user)
+        grupa.save()
+        return super(GrupaCreate, self).form_valid(form)
+
+    # def save(self, *args, **kwargs):
+    #         self.full_clean()
+    #         super(Room, self).save(*args, **kwargs)
+
+
+class GrupaUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Group
+    form_class = NewGroupForm
+    template_name = 'pytania/grupa_form.html'
+    success_url = "/grupa"
+
+    def test_func(self):
+        """Nadpisanie funkcji testującej uprawnienia użytkownika"""
+        return self.request.user.groups.filter(name='Autorzy').exists()
+
+    def get_login_url(self):
+        if not self.request.user.is_authenticated():
+            return super(GrupaUpdate, self).get_login_url()
+        else:
+            self.redirect_field_name = None
+            messages.warning(
+                self.request,
+                "Aby edytować grupy, musisz należeć do grupy Autorzy")
+            return '/grupy/'
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = Grupa.objects.filter(
+            autor=self.request.user)
+        return super(GrupaUpdate, self).get_context_data(**kwargs)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        try:
+            self.initial = {'token': self.object.grupa.token}
+            print(self.object.grupa.token)
+        except Grupa.DoesNotExist:
+            pass
+        return super(GrupaUpdate, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = NewGroupForm(self.request.POST, instance=self.object)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        self.object = form.save()
+        # self.object.save()
+        grupa = Grupa.objects.get(grupa=self.object)
+        if grupa.token != form.cleaned_data['token']:
+            grupa.token = form.cleaned_data['token']
+            grupa.save()
+        return super(GrupaUpdate, self).form_valid(form)
+
+
+class GrupaDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Grupa
+    template_name_suffix = '_delete'
+    success_url = '/grupa'
+
+    def test_func(self):
+        """Nadpisanie funkcji testującej uprawnienia użytkownika"""
+        return self.request.user.groups.filter(name='Autorzy').exists()
+
+    def get_login_url(self):
+        if not self.request.user.is_authenticated():
+            return super(GrupaCreate, self).get_login_url()
+        else:
+            self.redirect_field_name = None
+            messages.warning(
+                self.request,
+                "Aby usuwać grupy, musisz należeć do grupy Autorzy")
+            return '/grupy/'
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super(GrupaDelete, self).form_valid(form)
+
 # def my_register(request):
 #     """Rejestracja nowego użytkownika"""
 

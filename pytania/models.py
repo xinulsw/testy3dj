@@ -2,6 +2,8 @@
 
 from django.db import models
 from django.contrib.auth.models import User, Group
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 
 
@@ -9,6 +11,7 @@ class Grupa(models.Model):
     grupa = models.OneToOneField(
         Group, on_delete=models.CASCADE, related_name='grupa')
     token = models.CharField(
+        'Hasło',
         max_length=128,
         help_text="Hasło dostępu do grupy testowej")
     autor = models.ForeignKey(User, related_name='author')
@@ -19,6 +22,17 @@ class Grupa(models.Model):
     class Meta:
         verbose_name = "grupa"
         verbose_name_plural = "grupy"
+
+
+@receiver(post_save, sender=Group)
+def create_group_grupa(sender, instance, created, **kwargs):
+    if created:
+        Grupa.objects.create(grupa=instance, token=instance.token, autor=instance.autor)
+
+
+@receiver(post_save, sender=Group)
+def save_group_grupa(sender, instance, **kwargs):
+    instance.grupa.save()
 
 
 class Kategoria(models.Model):
