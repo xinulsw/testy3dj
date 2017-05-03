@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 
-
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.core.exceptions import ValidationError
 
 
 class Grupa(models.Model):
-    nazwa = models.OneToOneField(Group)
+    grupa = models.OneToOneField(
+        Group, on_delete=models.CASCADE, related_name='grupa')
     token = models.CharField(
         max_length=128,
         help_text="Hasło dostępu do grupy testowej")
-    autor = models.ForeignKey(User)
+    autor = models.ForeignKey(User, related_name='author')
 
     def __str__(self):
-        return str(self.nazwa)
+        return str(self.grupa)
 
     class Meta:
         verbose_name = "grupa"
@@ -132,7 +132,9 @@ class Test(models.Model):
         (T_TEST, 'Test'),
         (T_ANKIETA, 'Ankieta'),
     )
-    kategoria = models.ForeignKey(Kategoria, default=1)
+    kategoria = models.ForeignKey(
+        Kategoria,
+        on_delete=models.SET_DEFAULT, related_name="testy", default=1)
     typ = models.CharField(max_length=1, choices=TEST_TYP, default=T_TEST)
     nazwa = models.CharField(max_length=60, blank=True, default="")
     czas = models.PositiveSmallIntegerField(

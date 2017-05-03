@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib import admin
+# from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
+# from django.contrib.auth.models import Group
 from pytania.models import Grupa, Kategoria
 from pytania.models import Odpowiedz, Pytanie, Test
 from django.forms import TextInput, Textarea
@@ -15,6 +17,18 @@ class GrupaAdmin(admin.ModelAdmin):
         if not change:
             obj.autor = request.user
         obj.save()
+
+# class GrupaInline(admin.StackedInline):
+#     model = Grupa
+#     can_delete = False
+
+
+# class GrupaAdmin(BaseGroupAdmin):
+#     inlines = (GrupaInline, )
+
+
+# admin.site.unregister(Group)
+# admin.site.register(Group, GrupaAdmin)
 
 
 @admin.register(Kategoria)

@@ -2,17 +2,18 @@
 
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse
-from django.contrib.auth import forms, authenticate, login, logout
+from django.contrib.auth import forms, logout  # authenticate, login
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from pytania.models import Kategoria, Pytanie
-from pytania.forms import UserChangePassEmailForm
+from pytania.models import Kategoria, Pytanie, Grupa
+from django.contrib.auth.models import Group
+from pytania.forms import UserChangePassEmailForm, NewGroupForm
 from django.http import HttpResponseRedirect
 from pytania.forms import PytanieForm, OdpowiedziFormSet
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
 def index(request):
@@ -45,36 +46,18 @@ def my_profil(request):
     """Edycja danych użytkownika"""
 
     from pytania.forms import UserUpdateForm
-    data = {'username': request.user.username,
-            'first_name': request.user.first_name,
-            'last_name': request.user.last_name,
-            'email': request.user.email}
-    form = UserUpdateForm(initial=data)
-
+    form = UserUpdateForm(instance=request.user)
     if request.method == 'POST':
         form = UserUpdateForm(data=request.POST, instance=request.user)
-        if form.is_valid():
+        if form.has_changed() and form.is_valid():
             form.save()
             messages.success(request, "Dane zaktualizowano!")
+        else:
+            messages.info(request, "Dane są aktualne.")
 
-    formlog = forms.AuthenticationForm()
-    context = {'form': form, 'formlog': formlog}
+    # formlog = forms.AuthenticationForm()
+    context = {'form': form}
     return render(request, 'pytania/profil.html', context)
-
-
-def my_login(request):
-    """Logowanie użytkownika"""
-
-    if request.method == 'POST':
-        form = forms.AuthenticationForm(request, request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            messages.success(request, "Zostałeś zalogowany!")
-            return redirect(reverse('pytania:index'))
-
-    messages.warning(request, "Proszę się zarejestrować i zalogować!")
-    return redirect(reverse('pytania:index'))
 
 
 def my_logout(request):
@@ -84,27 +67,215 @@ def my_logout(request):
     return redirect(reverse('pytania:index'))
 
 
+@login_required()
+def my_grupy(request):
+    """Dodawanie do grupy / lista grup / usuwanie z grupy użytkownika"""
+    from pytania.forms import UserGroupForm
+
+    if request.method == 'POST':
+        form = UserGroupForm(data=request.POST)
+        if form.is_valid():
+            try:
+                grupa = Grupa.objects.get(token=form.cleaned_data.get('token'))
+                if request.user.groups.filter(pk=grupa.grupa.id).count():
+                    messages.warning(
+                        request, 'Jesteś już w grupie %s!' % grupa.grupa)
+                else:
+                    grupa.grupa.user_set.add(request.user)
+                    messages.success(
+                        request, "Dodano Cię do grupy %s!" % grupa.grupa)
+            except Grupa.DoesNotExist:
+                messages.error(request, 'Błędne hasło!')
+
+        # usnięcie użytkownika z grup
+        if request.POST.get('grupydel'):
+            for g_id in request.POST.get('grupydel'):
+                grupa = Grupa.objects.get(nazwa=g_id)
+                grupa.grupa.user_set.remove(request.user)
+                messages.success(
+                    request, "Usunięto Cię z grupy %s!" % grupa.grupa)
+
+    form = UserGroupForm()
+    grupy = request.user.groups.all()
+    context = {'form': form, 'grupy': grupy}
+    return render(request, 'pytania/grupy.html', context)
+
+
+class GrupaCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Group
+    # fields = ['name', 'token']
+    form_class = NewGroupForm
+    template_name = 'pytania/grupa_form.html'
+    success_url = "/grupa"
+
+    def test_func(self):
+        """Nadpisanie funkcji testującej uprawnienia użytkownika"""
+        return self.request.user.groups.filter(name='Autorzy').exists()
+
+    def get_login_url(self):
+        if not self.request.user.is_authenticated():
+            return super(GrupaCreate, self).get_login_url()
+        else:
+            self.redirect_field_name = None
+            messages.warning(
+                self.request,
+                "Aby dodawać grupy, musisz należeć do grupy Autorzy")
+            return '/grupy/'
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = Grupa.objects.filter(
+            autor=self.request.user)
+        return super(GrupaCreate, self).get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.save()
+        print(self.object)
+        grupa = Grupa(
+            grupa=self.object,
+            token=form.cleaned_data['token'],
+            autor=self.request.user)
+        grupa.save()
+        return super(GrupaCreate, self).form_valid(form)
+
+    # def save(self, *args, **kwargs):
+    #         self.full_clean()
+    #         super(Room, self).save(*args, **kwargs)
+
+
+class GrupaUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Group
+    form_class = NewGroupForm
+    template_name = 'pytania/grupa_form.html'
+    success_url = "/grupa"
+
+    def test_func(self):
+        """Nadpisanie funkcji testującej uprawnienia użytkownika"""
+        return self.request.user.groups.filter(name='Autorzy').exists()
+
+    def get_login_url(self):
+        if not self.request.user.is_authenticated():
+            return super(GrupaUpdate, self).get_login_url()
+        else:
+            self.redirect_field_name = None
+            messages.warning(
+                self.request,
+                "Aby edytować grupy, musisz należeć do grupy Autorzy")
+            return '/grupy/'
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = Grupa.objects.filter(
+            autor=self.request.user)
+        return super(GrupaUpdate, self).get_context_data(**kwargs)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        try:
+            self.initial = {'token': self.object.grupa.token}
+            print(self.object.grupa.token)
+        except Grupa.DoesNotExist:
+            pass
+        return super(GrupaUpdate, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = NewGroupForm(self.request.POST, instance=self.object)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        self.object = form.save()
+        # self.object.save()
+        grupa = Grupa.objects.get(grupa=self.object)
+        if grupa.token != form.cleaned_data['token']:
+            grupa.token = form.cleaned_data['token']
+            grupa.save()
+        return super(GrupaUpdate, self).form_valid(form)
+
+
+class GrupaDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Grupa
+    template_name_suffix = '_delete'
+    success_url = '/grupa'
+
+    def test_func(self):
+        """Nadpisanie funkcji testującej uprawnienia użytkownika"""
+        return self.request.user.groups.filter(name='Autorzy').exists()
+
+    def get_login_url(self):
+        if not self.request.user.is_authenticated():
+            return super(GrupaCreate, self).get_login_url()
+        else:
+            self.redirect_field_name = None
+            messages.warning(
+                self.request,
+                "Aby usuwać grupy, musisz należeć do grupy Autorzy")
+            return '/grupy/'
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super(GrupaDelete, self).form_valid(form)
+
+
 class KategoriaCreate(LoginRequiredMixin, CreateView):
     # login_url = '/pytania/login/'
     model = Kategoria
     fields = ['nazwa']
-    success_url = '/kategorie'
+    success_url = '/kategoria'
 
     def get_context_data(self, **kwargs):
         kwargs['object_list'] = Kategoria.objects.filter(
             autor=self.request.user)
         return super(KategoriaCreate, self).get_context_data(**kwargs)
 
-    # def get_initial(self):
-    #     return {
-    #         "przedmiot": Przedmiot.objects.get(pk=1)
-    #     }
-
     def form_valid(self, form):
         kategoria = form.save(commit=False)
         kategoria.autor = self.request.user
         kategoria.save()
         return super(KategoriaCreate, self).form_valid(form)
+
+
+class KategoriaUpdate(LoginRequiredMixin, UpdateView):
+    # login_url = '/pytania/login/'
+    model = Kategoria
+    fields = ['nazwa']
+    success_url = '/kategoria'
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = Kategoria.objects.filter(
+            autor=self.request.user)
+        return super(KategoriaUpdate, self).get_context_data(**kwargs)
+
+    # def form_valid(self, form):
+    #     kategoria = form.save(commit=False)
+    #     kategoria.autor = self.request.user
+    #     kategoria.save()
+    #     return super(KategoriaUpdate, self).form_valid(form)
+
+
+class KategoriaDelete(LoginRequiredMixin, DeleteView):
+    model = Kategoria
+    template_name_suffix = '_delete'
+    success_url = '/kategoria'
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return super(KategoriaDelete, self).form_valid(form)
+
+
+def kategoriaDel(request):
+    from django.http import JsonResponse
+    data = {}
+    if request.method == 'POST':
+        kategoria_id = request.POST.get('kategoria-id')
+        if kategoria_id:
+            data['success'] = 'Kategorię usunięto!'
+    else:
+        data['error'] = 'To nie powinno się zdarzyć!'
+
+    return JsonResponse(data)
 
 
 class PytanieCreate(LoginRequiredMixin, CreateView):

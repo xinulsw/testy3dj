@@ -39,6 +39,21 @@
 #     context = {'form': form, 'formlog': formlog}
 #     return render(request, 'pytania/register.html', context)
 
+# def my_login(request):
+#     """Logowanie użytkownika"""
+
+#     if request.method == 'POST':
+#         form = forms.AuthenticationForm(request, request.POST)
+#         if form.is_valid():
+#             user = form.get_user()
+#             login(request, user)
+#             messages.success(request, "Zostałeś zalogowany!")
+#             return redirect(reverse('pytania:index'))
+
+#     messages.warning(request, "Proszę się zarejestrować i zalogować!")
+#     return redirect(reverse('pytania:index'))
+
+
 # class PrzedmiotCreate(LoginRequiredMixin, CreateView):
 #     # login_url = '/pytania/login/'
 #     model = Przedmiot
@@ -55,6 +70,11 @@
 #         przedmiot.autor = self.request.user
 #         przedmiot.save()
 #         return super(PrzedmiotCreate, self).form_valid(form)
+
+# def get_initial(self):
+#     return {
+#         "przedmiot": Przedmiot.objects.get(pk=1)
+#     }
 
 
 # admin.py

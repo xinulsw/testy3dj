@@ -1,0 +1,38 @@
+{% extends "pytania/base.html" %}
+{% block title %}eCG Testy – Grupy użytkownika{% endblock %}
+    {% block content_title %}
+        Witaj, {{ user.get_full_name }}
+    {% endblock %}
+
+    {% block content %}
+        {% if grupy %}
+            <h2>Należysz do grup:</h2>
+            <form id="frmgrupydel" method="POST">
+                {% csrf_token %}
+            <table class="table" style="width: auto">
+            <tr><td>Nazwa</td><td>Usuń</td></tr>
+            {% for g in grupy %}
+                <tr>
+                    <td>{{ g.name }}</td>
+                    <td><input name="grupydel" type="checkbox" value="{{ g.id }}"></td>
+                </tr>
+            {% endfor %}
+            </table>
+                <button type="submit">Usuń</button>
+            </form>
+            <hr>
+            <p><a href="{% url 'pytania:grupa' %}" class="btn btn-default">Twoje grupy</a></p>
+            <hr>
+        {% else %}
+            <div class="alert alert-info">Nie należysz do żadnej grupy</div>
+        {% endif %}
+
+        <h3>Dołącz do nowej grupy</h3>
+        <form id="frmgrupy" method="POST">
+            {% csrf_token %}
+            <table class="table" style="width: auto">
+            {{ form.as_table }}
+            </table>
+            <button type="submit">Dołącz</button>
+        </form>
+    {% endblock %}

@@ -1,0 +1,13 @@
+{% extends "pytania/base.html" %}
+{% block title %}eCG Testy – Grupa{% endblock %}
+
+    {% block content_title %}
+        Grupa
+    {% endblock %}
+
+    {% block content %}
+    <form action="" method="post">{% csrf_token %}
+        <p>Czy na pewno usunąć grupę: "{{ object }}"?</p>
+        <input type="submit" value="Usuń" />
+    </form>
+    {% endblock %}

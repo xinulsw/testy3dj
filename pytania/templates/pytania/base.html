@@ -45,15 +45,16 @@
       <ul class="nav navbar-nav">
         <li><a href="{% url 'pytania:index' %}">Witamy</a></li>
       {% if user.is_authenticated %}
-        <li><a href="{% url 'pytania:kategorie' %}">Kategorie</a></li>
+        <li><a href="{% url 'pytania:kategoria' %}">Kategorie</a></li>
         <li><a href="{% url 'pytania:pytania-lista' %}">Pytania</a></li>
         <li><a href="{% url 'pytania:profil' %}">Profil</a></li>
+        <li><a href="{% url 'pytania:grupy' %}">Grupy</a></li>
       {% else %}
         <li><a href="{% url 'registration_register' %}">Zarejestruj</a></li>
       {% endif %}
       </ul>
       {% if not user.is_authenticated %}
-        <form class="navbar-form navbar-right" method="POST" action="{% url 'pytania:login' %}">
+        <form class="navbar-form navbar-right" method="POST" action="{% url 'auth_login' %}">
         {% csrf_token %}
         <span>{{ formlog.non_field_errors }}</span>
         <div class="form-group">
@@ -120,18 +121,17 @@
   <div class="container">
     <div class="row">
       <div class="col-xs-6">
-        &nbsp;&copy; 2011-2014 wDesign&nbsp;v. 1.2.0
+        &nbsp;&copy; 2011-2017 wDesign&nbsp;v. 0.1.2
       </div>
       <div class="col-xs-6">
-        <p class="pull-right">&middot; Theme by <a href="http://www.cagintranet.com" >Cagintranet</a> highly modified by wDesign</p>
+        <p class="pull-right">&middot; Theme by wDesign</p>
       </div>
       <div class="right"></div>
     </div>
   </div>
 
-<script type="text/javascript" src="{% static "pytania/js/jquery-1.11.3.min.js" %}"></script>
-<script type="text/javascript" src="{% static "pytania/js/jquery-ui-1.10.4.min.js" %}"></script>
-<script type="text/javascript" src="{% static "pytania/js/testy.js" %}"></script>
+<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 {% block get_js %}{% endblock %}
 </body>
 </html>

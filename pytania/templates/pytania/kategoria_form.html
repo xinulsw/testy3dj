@@ -5,21 +5,65 @@
         Kategorie
     {% endblock %}
 
+<!-- {% block get_js %}
+{% load static %}
+    <script type="text/javascript">
+    // Submit post on submit
+    $('#frmdel').on('submit', function(event){
+        event.preventDefault();
+        form = $('#frmdel')
+        console.log("formularz submitted!")  // sanity check
+        $.ajax({
+            url : form.attr("data-validate-username-url"),
+            type : "POST", // http method
+            data: form.serialize(),
+            // data : { the_post : $('#post-text').val() }, // data sent
+
+            // handle a successful response
+            success : function(json) {
+                // $('#post-text').val(''); // remove the value from the input
+                console.log(json); // log the returned json to the console
+                console.log("success"); // another sanity check
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+                //$('#results').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                //    " <a href='#' class='close'>&times;</a></div>"); // add the error to the dom
+                console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+            }
+        });
+    });
+    </script>
+    <script src="{% static 'pytania/js/ajax_csrf.js' %}" type="text/javascript"></script>
+{% endblock %} -->
+
     {% block content %}
-    <form action="" method="post">{% csrf_token %}
+    <h2>Twoje kategorie</h2>
+    <table class="table" style="width:auto">
+    {% for kategoria in object_list %}
+    <tr class="{% cycle 'odd' 'even' %}">
+        <td>{{ forloop.counter }}</td>
+        <td>{{ kategoria.nazwa }}</td><td><a href="{% url 'pytania:kategoria-edytuj' kategoria.id %}">Edytuj</a></td>
+        <td><a href="{% url 'pytania:kategoria-usun' kategoria.id %}">Usuń</a>
+
+<!--         <form id="frmdel" action="." method="post" data-validate-username-url="{% url 'pytania:kategoria-del' %}">
+            {% csrf_token %}
+            <input type="hidden" name="kategoria-id" value="{{ kategoria.id }}">
+            <input type="submit" value="Usuń" />
+        </form> -->
+        </td>
+    </tr>
+    {% empty %}
+        <p>Nie dodałeś jeszcze żadnych kategorii</p>
+    {% endfor %}
+    </table>
+
+    <h3>Dodaj/edytuj kategorię</h3>
+    <form id="frmkategoria" action="." method="post">
+        {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Zapisz" />
     </form>
-    <br />
-    <h2>Utworzone kategorie</h2>
-    <table class="tab">
-        {% for kategoria in object_list %}
-            <tr class="{% cycle 'odd' 'even' %}">
-            <td>{{ forloop.counter }}</td>
-            <td>{{ kategoria.nazwa }}</td><td>{{ kategoria.przedmiot }}</td>
-            </tr>
-        {% empty %}
-            <p>Nie dodałeś jeszcze żadnych kategorii</p>
-        {% endfor %}
-    </table>
+
     {% endblock %}

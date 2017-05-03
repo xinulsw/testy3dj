@@ -1,0 +1,34 @@
+{% extends "pytania/base.html" %}
+{% block title %}eCG Testy – Grupy{% endblock %}
+
+    {% block content_title %}
+        Grupy
+    {% endblock %}
+
+    {% block content %}
+    {% if object_list %}
+        <h2>Twoje grupy</h2>
+        <table class="table" style="width:auto">
+        <tr><th>Lp.</th><th>Nazwa</th><th>Token</th><th>&nbsp;</th><th>&nbsp;</th></tr>
+        {% for grupa in object_list %}
+        <tr class="{% cycle 'odd' 'even' %}">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ grupa.grupa }}</td>
+            <td>{{ grupa.token }}</td>
+            <td><a href="{% url 'pytania:grupa-edytuj' grupa.grupa.id %}">Edytuj</a></td>
+            <td><a href="{% url 'pytania:grupa-usun' grupa.id %}">Usuń</a></td>
+        </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+        <div class="alert alert-info">Nie dodałeś żadnej grupy</div>
+    {% endif %}
+
+    <h3>Dodaj/edytuj grupy</h3>
+    <form id="frmkategoria" action="." method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Zapisz" />
+    </form>
+
+    {% endblock %}

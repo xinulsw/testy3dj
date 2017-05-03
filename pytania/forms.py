@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import PasswordChangeForm
 # from django.contrib.auth.forms import UserCreationForm
 from pytania.models import Pytanie, Odpowiedz
@@ -23,7 +23,20 @@ class UserUpdateForm(forms.ModelForm):
         fields = ('username', 'first_name', 'last_name', 'email')
 
 
-class UserGroup(forms.ModelForm):
+class NewGroupForm(forms.ModelForm):
+    token = forms.CharField(
+        max_length=128,
+        help_text="Hasło dostępu do grupy testowej")
+
+    class Meta:
+        model = Group
+        fields = ('name', )
+    #     widgets = {
+    #         'nazwa': forms.TextInput(attrs={'size': 30})
+    #     }
+
+
+class UserGroupForm(forms.Form):
     token = forms.CharField(label="Hasło grupy", required=True)
 
 

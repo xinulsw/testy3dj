@@ -1,0 +1,18 @@
+{% extends "pytania/base.html" %}
+{% block title %}eCG Testy – Logowanie{% endblock %}
+  {% block content_title %}
+  {% endblock %}
+
+  {% block content %}
+  <h2>Logowanie</h2>
+    <form method="post" action=".">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="Zaloguj się">
+    </form>
+  <hr>
+  <h3>
+    Nie masz konta?<br>
+    <a href="{% url 'registration_register' %}">Utwórz konto!</a>
+  </h3>
+	{% endblock %}

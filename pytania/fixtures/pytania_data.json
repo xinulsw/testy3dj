@@ -3,7 +3,7 @@
   "model": "pytania.grupa",
   "pk": 1,
   "fields": {
-    "nazwa": 1,
+    "grupa": 1,
     "token": "U\u017cytkownicy",
     "autor": 1
   }
@@ -12,7 +12,7 @@
   "model": "pytania.grupa",
   "pk": 2,
   "fields": {
-    "nazwa": 2,
+    "grupa": 2,
     "token": "Autorzy",
     "autor": 1
   }
