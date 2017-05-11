@@ -1,0 +1,31 @@
+{% extends "pytania/base.html" %}
+{% block title %}eCG Testy – Obrazki{% endblock %}
+
+    {% block content_title %}
+        Obrazki
+    {% endblock %}
+
+    {% block content %}
+    <h2>Twoje obrazki</h2>
+    <table class="table" style="width:auto">
+    {% for obj in object_list %}
+    <tr class="{% cycle 'odd' 'even' %}">
+        <td>{{ forloop.counter }}</td>
+        <td><img src="{{ obj.obrazek.url }}"></td>
+        <td>{{ obj.opis }}</td>
+        <td>{{ obj.kategoria }}</td>
+        <td><a href="{% url 'pytania:obrazek-edytuj' obj.id %}">Edytuj</a></td>
+        <td><a href="{% url 'pytania:obrazek-usun' obj.id %}">Usuń</a></td>
+    </tr>
+    {% empty %}
+        <p>Nie dodałeś jeszcze żadnych obrazków.</p>
+    {% endfor %}
+    </table>
+
+    <h3>Dodaj/edytuj obrazek</h3>
+    <form id="frmadd" action="." enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Zapisz" />
+    </form>
+    {% endblock %}

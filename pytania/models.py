@@ -27,13 +27,19 @@ class Grupa(models.Model):
 @receiver(post_save, sender=Group)
 def create_group_grupa(sender, instance, created, **kwargs):
     if created:
-        Grupa.objects.create(
-            grupa=instance, token=instance.token, autor=instance.autor)
+        try:
+            Grupa.objects.create(
+                grupa=instance, token=instance.token, autor=instance.autor)
+        except AttributeError:
+            return
 
 
 @receiver(post_save, sender=Group)
 def save_group_grupa(sender, instance, **kwargs):
-    instance.grupa.save()
+    try:
+        instance.grupa.save()
+    except Grupa.DoesNotExist:
+        return
 
 
 class Kategoria(models.Model):
@@ -57,7 +63,7 @@ def validate_image(fieldfile_obj):
 
 def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return 'user_{0}/{1}'.format(instance.user.id, filename)
+    return 'user_{0}/{1}'.format(instance.autor.id, filename)
 
 
 class Obrazek(models.Model):
@@ -68,7 +74,14 @@ class Obrazek(models.Model):
         blank=True,
         validators=[validate_image])
     opis = models.CharField(
-        max_length=254, verbose_name="opis obrazka", blank=True, default="")
+        max_length=128, verbose_name="opis obrazka", blank=True, default="")
+    kategoria = models.ForeignKey(
+        Kategoria,
+        on_delete=models.SET_DEFAULT, related_name="obrazki", default=1)
+    autor = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.opis
 
 
 class Odpowiedz(models.Model):
@@ -130,7 +143,7 @@ class Pytanie(models.Model):
         blank=True,
         verbose_name="Objaśnienia",
         help_text="Dodatkowy opis wyświetlany pod poleceniem")
-    autor = models.ForeignKey(User)
+    autor = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.pytanie)
@@ -180,7 +193,7 @@ class Test(models.Model):
     grupy = models.ManyToManyField(
         Grupa,
         verbose_name="Grupy przypisane do testu")
-    autor = models.ForeignKey(User)
+    autor = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.nazwa)

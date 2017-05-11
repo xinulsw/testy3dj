@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import PasswordChangeForm
 # from django.contrib.auth.forms import UserCreationForm
-from pytania.models import Pytanie, Odpowiedz, Grupa
+from pytania.models import Pytanie, Odpowiedz, Grupa, Obrazek
 from django.forms.models import inlineformset_factory
 
 
@@ -39,8 +39,10 @@ class UserGroupForm(forms.Form):
     token = forms.CharField(label="Hasło grupy", required=True)
 
 
-class ObrazekForm(forms.Form):
-    imgfile = forms.FileField(label='Wybierz obrazek')
+class ObrazekForm(forms.ModelForm):
+    class Meta:
+        model = Obrazek
+        fields = ('obrazek', 'opis')
 
 
 OdpowiedziFormSet = inlineformset_factory(

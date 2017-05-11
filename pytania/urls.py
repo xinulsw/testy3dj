@@ -31,6 +31,11 @@ urlpatterns = [
         views.KategoriaDelete.as_view(), name='kategoria-usun'),
     url(r'^ajax/kategoria-del/$',
         views.kategoriaDel, name='kategoria-del'),
+    url(r'^obrazek/$', views.ObrazekCreate.as_view(), name='obrazek'),
+    url(r'^obrazek/(?P<pk>\d+)/edit/$',
+        views.ObrazekUpdate.as_view(), name='obrazek-edytuj'),
+    url(r'^obrazek/(?P<pk>\d+)/delete/$',
+        views.ObrazekDelete.as_view(), name='obrazek-usun'),
     url(r'^pytanie/$', views.PytanieCreate.as_view(), name='pytanie'),
     url(r'^pytania/$', views.PytaniaLista.as_view(), name='pytania-lista'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -56,7 +56,13 @@ coverage.xml
 docs/_build/
 
 # Sublime-Text projects
-.sublime-project
+*.sublime-project
+/testy3dj.sublime-project
+*.sublime-workspace
+/testy3dj.sublime-workspace
 
 # sqlite database
 /db.sqlite3
+
+# media
+media/

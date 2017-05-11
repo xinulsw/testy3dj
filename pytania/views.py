@@ -6,7 +6,7 @@ from django.contrib.auth import forms, logout  # authenticate, login
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from pytania.models import Kategoria, Pytanie, Grupa
+from pytania.models import Grupa, Kategoria, Obrazek, Pytanie
 from django.contrib.auth.models import Group
 from pytania.forms import UserChangePassEmailForm
 from pytania.forms import GroupForm, GrupaForm
@@ -245,8 +245,37 @@ def kategoriaDel(request):
     return JsonResponse(data)
 
 
+class ObrazekCreate(LoginRequiredMixin, CreateView):
+    model = Obrazek
+    fields = ['obrazek', 'opis', 'kategoria']
+    success_url = '/obrazek'
+
+    def get_context_data(self, **kwargs):
+        kwargs['object_list'] = Obrazek.objects.filter(
+            autor=self.request.user)
+        return super(ObrazekCreate, self).get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.autor = self.request.user
+        obj.save()
+        return super(ObrazekCreate, self).form_valid(form)
+
+
+class ObrazekUpdate(LoginRequiredMixin, UpdateView):
+    model = Obrazek
+    fields = ['obrazek', 'opis', 'kategoria']
+    success_url = '/obrazki'
+
+
+class ObrazekDelete(LoginRequiredMixin, DeleteView):
+    model = Obrazek
+    fields = ['obrazek', 'opis', 'kategoria']
+    success_url = '/obrazki'
+
+
 class PytanieCreate(LoginRequiredMixin, CreateView):
-    login_url = '/pytania/login/'
+    # login_url = '/pytania/login/'
     model = Pytanie
     form_class = PytanieForm
     success_url = '/pytanie'
@@ -282,7 +311,7 @@ class PytanieCreate(LoginRequiredMixin, CreateView):
     def form_invalid(self, form, odpowiedzi):
         return self.render_to_response(
             self.get_context_data(form=form, odpowiedzi=odpowiedzi)
-            )
+        )
 
 
 class PytaniaLista(LoginRequiredMixin, ListView):
@@ -291,7 +320,8 @@ class PytaniaLista(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super(PytaniaLista, self).get_context_data(**kwargs)
-        context['object_list'] = Pytanie.objects.filter(autor=self.request.user)
+        context['object_list'] = Pytanie.objects.filter(
+            autor=self.request.user)
         return context
 
 
